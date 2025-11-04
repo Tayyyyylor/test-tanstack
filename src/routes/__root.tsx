@@ -15,9 +15,11 @@ import type { QueryClient } from '@tanstack/react-query'
 
 import '../i18n'
 import { getSupabaseServerClient } from '@/utils/supabase'
+import { Header } from '@/components/layouts/Header'
 
 interface MyRouterContext {
   queryClient: QueryClient
+  user?: { email: string } | null
 }
 
 const fetchUser = createServerFn({ method: 'GET' }).handler(async () => {
@@ -31,6 +33,11 @@ const fetchUser = createServerFn({ method: 'GET' }).handler(async () => {
   return {
     email: data.user.email,
   }
+})
+
+export const logoutFn = createServerFn({ method: 'POST' }).handler(async () => {
+  const supabase = getSupabaseServerClient()
+  await supabase.auth.signOut()
 })
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
@@ -73,6 +80,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <ThemeProvider>
+          <Header />
           {children}
           <TanStackDevtools
             config={{
