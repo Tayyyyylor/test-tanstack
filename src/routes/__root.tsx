@@ -5,19 +5,42 @@ import {
 } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
+import { createServerFn } from '@tanstack/react-start'
 
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
-
+import { ThemeProvider } from '../contexts/ThemeContext'
 import appCss from '../styles.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
+
 import '../i18n'
+import { getSupabaseServerClient } from '@/utils/supabase'
 
 interface MyRouterContext {
   queryClient: QueryClient
 }
 
+const fetchUser = createServerFn({ method: 'GET' }).handler(async () => {
+  const supabase = getSupabaseServerClient()
+  const { data, error: _error } = await supabase.auth.getUser()
+
+  if (!data.user?.email) {
+    return null
+  }
+
+  return {
+    email: data.user.email,
+  }
+})
+
 export const Route = createRootRouteWithContext<MyRouterContext>()({
+  beforeLoad: async () => {
+    const user = await fetchUser()
+
+    return {
+      user,
+    }
+  },
   head: () => ({
     meta: [
       {
@@ -49,19 +72,21 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {children}
-        <TanStackDevtools
-          config={{
-            position: 'bottom-right',
-          }}
-          plugins={[
-            {
-              name: 'Tanstack Router',
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-            TanStackQueryDevtools,
-          ]}
-        />
+        <ThemeProvider>
+          {children}
+          <TanStackDevtools
+            config={{
+              position: 'bottom-right',
+            }}
+            plugins={[
+              {
+                name: 'Tanstack Router',
+                render: <TanStackRouterDevtoolsPanel />,
+              },
+              TanStackQueryDevtools,
+            ]}
+          />
+        </ThemeProvider>
         <Scripts />
       </body>
     </html>

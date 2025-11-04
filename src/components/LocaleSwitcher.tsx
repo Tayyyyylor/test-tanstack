@@ -23,15 +23,15 @@ export const LocaleSwitcher = () => {
 
   return (
     <div className="relative inline-block" onClick={handleClick}>
-      <button className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md transition-colors">
+      <button className="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-md transition-colors">
         <span className="font-medium">{currentLocale.label}</span>
       </button>
       {isOpen && (
-        <ul className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-10 min-w-full">
+        <ul className="absolute top-full left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-10 min-w-full">
           {locales.map((locale) => (
             <li key={locale.code}>
               <button
-                className="w-full px-4 py-2 text-left hover:bg-gray-100 transition-colors first:rounded-t-md last:rounded-b-md"
+                className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors first:rounded-t-md last:rounded-b-md"
                 onClick={() => handleLocaleChange(locale.code)}
               >
                 {locale.label}
